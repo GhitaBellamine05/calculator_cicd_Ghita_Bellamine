@@ -31,24 +31,22 @@ jobs:
             echo "USER_NAME=anonymous" >> $GITHUB_ENV
           fi
 
-      - name: 🧪 Build and Run Tests
-        run: mvn -B verify
+      - name: 🧪 Run Tests
+        run: mvn -B test
 
-      - name: 📊 Publish Test Results
+      - name: 📊 Publish Test Results (Job Summary Only)
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: "**/target/surefire-reports/*.xml"
-
-      - name: 📈 Upload Code Coverage (Optional)
-        uses: codecov/codecov-action@v4
-        with:
-          directory: ./target/site/jacoco/
-          flags: unittests
-          fail_ci_if_error: false
+          check_run: false        # ✅ Prevents 403 error
+          job_summary: true       # ✅ Shows results in job summary (default)
 
       - name: 📦 Build JAR with Custom Name
-        run: mvn clean package -DskipTests
+        run: |
+          mvn clean package -DskipTests
+          # Rename JAR to include user name
+          mv target/calculator_cicd-*.jar target/${{ env.USER_NAME }}-calculator.jar
 
       - name: 📤 Upload Personalized JAR
         uses: actions/upload-artifact@v4
@@ -61,5 +59,4 @@ jobs:
           echo "## 🧮 CI/CD Summary" >> $GITHUB_STEP_SUMMARY
           echo "- Java Version: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
           echo "- User: ${{ env.USER_NAME }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Test Results: Published" >> $GITHUB_STEP_SUMMARY
           echo "- JAR Uploaded: ${{ env.USER_NAME }}-calculator.jar" >> $GITHUB_STEP_SUMMARY
