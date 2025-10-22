@@ -46,7 +46,7 @@ jobs:
         run: |
           mvn clean package -DskipTests
           # Rename JAR to include user name
-          mv target/calculator_cicd-*.jar target/${{ env.USER_NAME }}-calculator.jar
+          mv target/calculator.jar target/${{ env.USER_NAME }}-calculator.jar
 
       - name: 📤 Upload Personalized JAR
         uses: actions/upload-artifact@v4

@@ -49,22 +49,19 @@
                 </configuration>
             </plugin>
 
-            <!-- Optional: Add this if you want to customize JAR name per student -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
-                    <!-- Default name; students will override via user.properties -->
+        
                     <finalName>calculator</finalName>
                 </configuration>
             </plugin>
 
-            <!-- Optional: Load user.name from user.properties -->
         </plugins>
     </build>
 
-    <!-- Plugin repository for properties-maven-plugin -->
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>
