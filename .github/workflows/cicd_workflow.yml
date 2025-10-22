@@ -21,31 +21,24 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: 📝 Read user.name from user.properties
-        id: get-user
-        run: |
-          if [ -f user.properties ]; then
-            name=$(grep 'user.name=' user.properties | cut -d'=' -f2)
-            echo "USER_NAME=${name}" >> $GITHUB_ENV
-          else
-            echo "USER_NAME=anonymous" >> $GITHUB_ENV
-          fi
+      # ✅ Get GitHub username automatically
+      - name: 📝 Set user name from GitHub actor
+        run: echo "USER_NAME=${{ github.actor }}" >> $GITHUB_ENV
 
       - name: 🧪 Run Tests
         run: mvn -B test
 
-      - name: 📊 Publish Test Results (Job Summary Only)
+      - name: 📊 Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: "**/target/surefire-reports/*.xml"
-          check_run: false        # ✅ Prevents 403 error
-          job_summary: true       # ✅ Shows results in job summary (default)
+          check_run: false
+          job_summary: true
 
-      - name: 📦 Build JAR with Custom Name
+      - name: 📦 Build and Rename JAR
         run: |
           mvn clean package -DskipTests
-          # Rename JAR to include user name
           mv target/calculator.jar target/${{ env.USER_NAME }}-calculator.jar
 
       - name: 📤 Upload Personalized JAR
@@ -57,6 +50,5 @@ jobs:
       - name: ✅ Summary
         run: |
           echo "## 🧮 CI/CD Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- Java Version: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
-          echo "- User: ${{ env.USER_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub User: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
           echo "- JAR Uploaded: ${{ env.USER_NAME }}-calculator.jar" >> $GITHUB_STEP_SUMMARY
