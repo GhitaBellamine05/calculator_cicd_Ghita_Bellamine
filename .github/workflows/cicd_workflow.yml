@@ -28,14 +28,6 @@ jobs:
       - name: 🧪 Run Tests
         run: mvn -B test
 
-      - name: 📊 Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: "**/target/surefire-reports/*.xml"
-          check_run: false
-          job_summary: true
-
       - name: 📦 Build and Rename JAR
         run: |
           mvn clean package -DskipTests
