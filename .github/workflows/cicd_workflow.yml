@@ -1,0 +1,65 @@
+name: 🧮 Calculator CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: 📝 Read user.name from user.properties
+        id: get-user
+        run: |
+          if [ -f user.properties ]; then
+            name=$(grep 'user.name=' user.properties | cut -d'=' -f2)
+            echo "USER_NAME=${name}" >> $GITHUB_ENV
+          else
+            echo "USER_NAME=anonymous" >> $GITHUB_ENV
+          fi
+
+      - name: 🧪 Build and Run Tests
+        run: mvn -B verify
+
+      - name: 📊 Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: "**/target/surefire-reports/*.xml"
+
+      - name: 📈 Upload Code Coverage (Optional)
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./target/site/jacoco/
+          flags: unittests
+          fail_ci_if_error: false
+
+      - name: 📦 Build JAR with Custom Name
+        run: mvn clean package -DskipTests
+
+      - name: 📤 Upload Personalized JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.USER_NAME }}-calculator-jar
+          path: target/${{ env.USER_NAME }}-calculator.jar
+
+      - name: ✅ Summary
+        run: |
+          echo "## 🧮 CI/CD Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Java Version: $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
+          echo "- User: ${{ env.USER_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Results: Published" >> $GITHUB_STEP_SUMMARY
+          echo "- JAR Uploaded: ${{ env.USER_NAME }}-calculator.jar" >> $GITHUB_STEP_SUMMARY
