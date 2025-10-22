@@ -1,4 +1,5 @@
 # 🧮 Calculator CI/CD Project (CC-SE)
+I’ve created a new Git repository for you to practice **CI/CD workflows**, **Git collaboration**, and **unit testing** as part of your **group work**.
 
 A collaborative Java calculator project where student groups implement their own calculator logic or simply implement other operations. All implementations are automatically tested, built, and packaged via **GitHub Actions CI/CD** (see `.github/workflows/cicd_workflow.yml`).
 
