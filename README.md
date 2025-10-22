@@ -10,3 +10,5 @@ A collaborative Java calculator project where student groups implement their own
 - Write Unit Tests for your code
 - Your code will be **automatically tested** and **packaged into a JAR** named after your GitHub username.
 - The CI/CD workflow `.github/workflows/cicd_workflow.yml` ensures correctness and simplifies submission.
+  
+![successful release](assets/cicd.png)
